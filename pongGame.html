@@ -1,0 +1,527 @@
+<!-- 
+
+TO DO:
+- more balls?
+- add marker with html - goal count
+- add authors on bottom
+- keybind to accelarate / slow down ball
+- colour explosion? etc
+- add instructions - keybinds, etc to html on bottom
+- select right or left player
+
+TO FIX:
+- can't detect second key being pushed when another one has been pushed first
+
+SUGGESTIONS:
+- if ball hits a corner, ball speed increases greatly
+- if ball hits angle, ball speed incresase ??
+
+-->
+
+<!doctype html>
+<html>
+
+<!-- STEP 1: Prepare the canvas -->
+
+<head>
+    <style>
+        #my_Canvas {
+            border: 5px dotted red;
+            padding-left: 0;
+            padding-right: 0;
+            margin: auto;
+            display: block;
+            border-radius: 15px;
+            background-color: grey;
+            margin-top: 5%;
+        }
+
+        #overlay {
+            position: fixed;
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        #text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 50px;
+            color: white;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="overlay">
+        <div id="menu-container">
+            <div id="text">Pong</div>
+            <button id="singlePlayer" onclick="pongGame.play()">Single player</button>
+            <button id="singlePlayer" onclick="pongGame.closeMenu()">Multiplayer</button>
+            <button id="singlePlayer" onclick="pongGame.closeMenu()">Options</button>
+            <button id="singlePlayer" onclick="pongGame.closeMenu()">Instrutions</button>
+        </div>
+    </div>
+
+    <div id="container">
+        <canvas width="600" height="550" id="my_Canvas"></canvas>
+
+        <!-- <p>
+            Instructions:
+            - Player 1 Up: || Down:
+             -> ↑ ↓ 
+            - Plyer 2 Up: w || Down: s
+        </p> -->
+    </div>
+
+    <!-- vertex Shader -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+       #version 300 es
+       precision mediump float;
+
+       in vec2 aCoordinates;
+
+       void main(void) {
+         gl_Position = vec4(aCoordinates, 0, 1);           
+         gl_PointSize = 10.0;
+       }
+       
+  </script>
+
+
+    <!-- fragment Shader -->
+    <script id="fragment-shader" type="x-shader/x-fragment">
+      #version 300 es
+      precision mediump float;
+      
+      uniform vec4 uColor;
+
+      out vec4 fragColor;
+
+      void main(void) {
+        fragColor = uColor;
+    }
+  </script>
+
+    <script>
+
+        // Basic variables
+        var colorLoc;
+        var vertexBuffer;
+
+        // Game direction - ball & player movement
+        var direction = {
+            'standard': 0,
+            'left': -0.03, 'right': 0.03,
+            //'up': 3, 'down': 4
+        }
+
+        // Goals per game
+        var goals = [1, 3, 5, 10];
+
+        // Game modes - increments ball speed, player speed, player size, ball size, more balls, etc     
+        // var noob = {
+        //     'ballSpeed': 0.01,
+        //     'playerSpeed': 0,
+        //     'playerHeight': 0,
+        //     'ballSize': 0,
+        //     'balls': 1
+        // }
+
+        // var easy = {
+        //     'ballSpeed': 0.01,
+        //     'playerSpeed': 0,
+        //     'playerHeight': 0,
+        //     'ballSize': 0,
+        //     'balls': 1
+        // }
+
+        // var medium = {
+        //     'ballSpeed': 0.01,
+        //     'playerSpeed': 0,
+        //     'playerHeight': 0,
+        //     'ballSize': 0,
+        //     'balls': 1
+        // }
+
+        // var hard = {
+        //     'ballSpeed': 0.01,
+        //     'playerSpeed': 0,
+        //     'playerHeight': 0,
+        //     'ballSize': 0,
+        //     'balls': 1
+        // }
+
+        // var extreme = {
+        //     'ballSpeed': 0.01,
+        //     'playerSpeed': 0,
+        //     'playerHeight': 0,
+        //     'ballSize': 0,
+        //     'balls': 1
+        // }
+
+        // Players     
+        var player1 = { // Left player
+            'x': -0.8, 'y': 0,
+            'width': 0.05, 'height': 0.3,
+            'color': [1, 1, 1, 1],
+            'move': 0, // -1 -> moving down; 0 -> static; 1 -> moving up
+            'speed': 0.02, 'score': 0
+        }
+
+        var player2 = { // Right player
+            'x': 0.7, 'y': 0,
+            'width': 0.05, 'height': 0.3,
+            'color': [1, 1, 1, 1],
+            'move': 0, // -1 -> moving down; 0 -> static; 1 -> moving up
+            'speed': 0.02, 'score': 0
+        }
+
+        // Ball
+        var ball = {
+            'x': 0, 'y': 0,
+            'width': 0.05, 'height': 0.05,
+            'color': [1, 1, 0, 1],
+            'movementX': 0.03, 'movementY': 0.01,
+            'reset': 0, // 1 -> resets ball position
+            'speed': 0.01
+        }
+
+        // ---------------------------------------- Modified in class ----------------------------------------
+        //      var ball = {
+        //        'x':-0.5, 'y':0.3,
+        //        'width':0.1, 'height':0.1,
+        //        'color':[1,1,0,1],
+        //        'speedX':0.01, 'speedY':-0.02
+        //      }
+
+        // var player1 = {
+        //   'x':-0.8, 'y':-0.3,
+        //   'width':0.1, 'height':0.4,
+        //   'color':[1,1,1,1],
+        //   'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
+        // }
+
+        //      var player2 = {
+        //        'x':0.7, 'y':-0.3,
+        //        'width':0.1, 'height':0.4,
+        //        'color':[1,1,1,1],
+        //        'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
+        //      }
+
+        function drawRectangle(r) {
+            x = r.x;
+            y = r.y;
+            w = r.width;
+            h = r.height;
+            v = new Float32Array([x, y + h, x + w, y + h, x, y,
+                x, y, x + w, y + h, x + w, y]);
+            // Pass the vertex data to the buffer
+            gl.bufferData(gl.ARRAY_BUFFER, v, gl.STATIC_DRAW);
+            gl.uniform4fv(colorLoc, r.color); // We add the v because it's a vector
+            gl.drawArrays(gl.TRIANGLES, 0, 6); // Method that paints elements - rectangles, etc
+        }
+        // ---------------------------------------- End class modification ----------------------------------------
+
+        // Checking for collisions
+        function isColliding(pl1, pl2) {
+            smallerWidth = pl1.x < pl2.x + pl2.width;
+            biggerWidth = pl1.x + pl1.width > pl2.x;
+            smallerHeight = pl1.y < pl2.y + pl2.height;
+            biggerHeight = pl1.y + pl1.height > pl2.y;
+
+            return smallerWidth && biggerWidth && smallerHeight && biggerHeight;
+        }
+
+        function init(gameType) {
+            // Game initiation
+            this.started = this.ended = false;
+            this.playerTurn = player2;
+            this.timer = this.round = 0;
+            this.gameType = gameType;
+
+            // ============ STEP 1: Creating a canvas=================
+            canvas = document.getElementById('my_Canvas');
+            gl = canvas.getContext('webgl2');
+
+            //======= STEP 2: Defining and storing the geometry=======
+            var vertices = [
+                -0.8, 0.5,
+                0.0, 0.5,
+                -0.25, 0.25,
+                0.0, 0.0
+            ];
+
+            // Create an empty buffer object to store the vertex buffer
+            vertex_buffer = gl.createBuffer();
+
+            // Bind appropriate array buffer to it
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+            // Unbind the buffer
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            //========== STEP 3: Create and compile shaders ==========
+
+            // Create a vertex shader object
+            var vertShader = gl.createShader(gl.VERTEX_SHADER);
+
+            // Attach vertex shader source code
+            var script = document.getElementById('vertex-shader');
+            var shaderString = script.text.trim();
+            gl.shaderSource(vertShader, shaderString);
+
+            // Compile the vertex shader
+            gl.compileShader(vertShader);
+
+            // Create fragment shader object
+            var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+            // Attach fragment shader source code
+            script = document.getElementById('fragment-shader');
+            shaderString = script.text.trim();
+            gl.shaderSource(fragShader, shaderString);
+
+            // Compile the fragmentt shader
+            gl.compileShader(fragShader);
+
+            // Create a shader program object to store the combined shader program
+            var shaderProgram = gl.createProgram();
+
+            // Attach a vertex shader
+            gl.attachShader(shaderProgram, vertShader);
+
+            // Attach a fragment shader
+            gl.attachShader(shaderProgram, fragShader);
+
+            // Link both programs
+            gl.linkProgram(shaderProgram);
+
+            // Use the combined shader program object
+            gl.useProgram(shaderProgram);
+
+            //======== STEP 4: Associating shaders to buffer objects ========
+
+            // Bind vertex buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+            // Get the attribute location
+            var coordLocation = gl.getAttribLocation(shaderProgram, "aCoordinates");
+
+            // obtener la location del color
+            colorLoc = gl.getUniformLocation(shaderProgram, "uColor");
+
+            // Point an attribute to the currently bound VBO
+            gl.vertexAttribPointer(coordLocation, 2, gl.FLOAT, false, 0, 0);
+
+            // Enable the attribute
+            gl.enableVertexAttribArray(coordLocation);
+
+            // Unbind the buffer
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            time = 0;
+            pongGame.render(time);
+
+            // Recognizing keyboard
+            document.onkeydown = pongGame.onKeyDown;
+            document.onkeyup = pongGame.onKeyUp;
+        }
+
+        // ############################# MENUS #############################
+
+        function gameMenu() {
+            $(window).on('load', function () {
+                $('#overlay').hide();
+            })
+        }
+
+        function gameEndMenu() { }
+
+        // ############################# RENDERING #############################
+
+        var game = {
+
+            render: function (time) {
+                // console.log('tiempo='+time);
+
+                //========= STEP 5: Drawing the primitive ===============
+
+                // Clear the canvas - r, g, b, a
+                gl.clearColor(0, 0, 0, 1.0);
+
+                // Clear the color buffer bit
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // Set the view port
+                gl.viewport(0, 0, canvas.width, canvas.height);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+                pongGame.drawObjects(); // Draw objects - players & ball
+                pongGame.ballAnimation(); // Ball animation
+                pongGame.playerCollisions(); // Player collision limit - ball & wall
+
+                pongGame.update(); // Update objects - score, player & ball movement
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                window.requestAnimationFrame(pongGame.render); // Commented in class to avoid animation
+            },
+
+            // ############################# GAME OBJECTS #############################
+
+            drawObjects: function () {
+                drawRectangle(ball); // Painting the ball
+                drawRectangle(player1); // Painting player1
+                drawRectangle(player2); // Painting player2
+            },
+
+            // ############################# ANIMATIONS & COLLISIONS #############################
+
+            ballAnimation: function () {
+                ball.x += ball.movementX;
+                ball.y += ball.movementY;
+            },
+
+            player1Animation: function () {
+                player1.y += player1.move; // Player animation
+            },
+
+            player2Animation: function () {
+                player2.y += player2.move; // Player animation
+            },
+
+            playerCollisions: function () {
+                // Ball & player collisions
+                if (ball.x < 0.749 && ball.x > (player2.x - player2.width) - 0.01) { // Right player
+                    if (ball.y <= player2.y + player2.height && ball.y + ball.height >= player2.y) {
+                        ball.x = (player2.x - ball.width);
+                        ball.movementX = direction.left;
+                    }
+                }
+
+                // Ball & player collisions
+                if (ball.x < -0.749 && ball.x > (player1.x - player1.width) + 0.01) {
+                    if (ball.y <= player1.y + player1.height && ball.y + ball.height >= player1.y) {
+                        ball.x = (player1.x + ball.width);
+                        ball.movementX = direction.right;
+                    }
+                }
+
+                // Player canvas limit
+                if (player1.y >= (1 - player1.height)) player1.y = (1 - player1.height); // Top limit
+                if (player1.y <= -1) player1.y = -1; // Bottom limit
+
+                // Player canvas limit
+                if (player2.y >= (1 - player2.height)) player2.y = (1 - player2.height); // Top limit
+                if (player2.y <= -1) player2.y = -1; // Bottom limit
+            },
+
+            ballCollisions: function () {                
+                if (ball.y + ball.width >= 1) ball.movementY *= -1; // Top border bounce
+                if (ball.y <= -1) ball.movementY *= -1; // Bottom border bounce
+                if (ball.x <= -1) pongGame.reset(player1, player2); // Left border reset
+                if (ball.x + ball.width >= 1) ball.movementX *= -1; // Right border reset
+
+                // Top & bottom bounce
+                // if (ball.x <= -1) ball.movementX *= -1; // Left border
+                // if (ball.x + ball.width >= 1) ball.movementX *= -1; // Right border
+            },
+
+            // ############################# KEYBOARD DETECTING #############################
+
+            // Processing keyDown through flag
+            onKeyDown: function (key) {
+                switch (key.keyCode) { // Player state changes to moving up or down by key pressing
+                    case 87: player1.move = 0.02; break; // Arrow up
+                    case 83: player1.move = -0.02; break; // Arrow down
+                    case 38: player2.move = 0.02; break; // Keybind w - up
+                    case 40: player2.move = -0.02; break; // Keybind s - down
+                }
+            },
+
+            // Processing keyUp through flag
+            onKeyUp: function (key) {
+                player1.move = 0;
+                player2.move = 0;
+            },
+
+            // ############################# GAME DEVELOPMENT #############################
+
+            // Start game
+            play: function () {
+                pongGame.closeMenu();
+                init("single");
+            },
+
+            // Resets turn when ball is thrown out of the canvas
+            reset: function () {
+                // ball = new 
+                // turn = loser;
+            },
+
+            // Updates objects - score, player & ball
+            update: function () {
+                // Calculating bounces
+                if (!this.ended) { // If the game is on
+                    pongGame.ballCollisions(); // Limiting ball to canvas 
+
+                    // Animating players
+                    if (this.gameType === "single") pongGame.player1Animation()
+                    else {
+                        pongGame.player1Animation();
+                        pongGame.player2Animation();
+                    }
+
+                    // Ball movement on turn reset
+
+                    // Ball in intended direction?
+
+                    // AI player movement
+
+                    // AI collision
+
+                    // End of game           
+                }
+            },
+
+            // ############################# TOOLS #############################
+
+            // Close overlay
+            closeMenu: function () {
+                document.getElementById("overlay").style.display = "none";
+            },
+        }
+
+        // var logo = {
+        //     pLogo: function (line) {
+        //         var result = {
+        //             'x': line === 1 ? -1 : line === 2 ? 1 : 3,
+        //             'y': line === 1 ? 2 : line === 2 ? 1 : 3,
+        //             'width': line === 1 ? 0.05 : line === 2 ? 1 : 3,
+        //             'height': line === 1 ? 0.2 : line === 2 ? 1 : 3,
+        //             'color': [255, 255, 0, 1],
+        //         }
+
+        //         return result;
+        //     }
+        // }
+
+        var pongGame = Object.assign({}, game);
+        window.onload = gameMenu();
+
+    </script>
+
+</body>
+
+</html>
