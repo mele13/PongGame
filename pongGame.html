@@ -11,7 +11,7 @@ TO DO:
 
 TO FIX:
 - can't detect second key being pushed when another one has been pushed first
-- ball disappears when resetting turn every few resets (more often when thrown to left side) - counts as score, ball disappears
+- ball disappears when resetting turn every few resets (more often when thrown to left side) - counts as score, ball disappears - a veces ball.movementY da undefined
 
 SUGGESTIONS:
 - if ball hits a corner, ball speed increases greatly
@@ -135,7 +135,7 @@ SUGGESTIONS:
             // 'left': -0.03, 'right': 0.03,
             'left': -0.015, 'right': 0.015,
         }
-
+        
         // Game modes - increments ball speed, player speed, player size, ball size, more balls, etc     
         // var noob = {
         //     'ballSpeed': 0.01,
@@ -340,8 +340,6 @@ SUGGESTIONS:
             // Recognizing keyboard
             document.onkeydown = pongGame.onKeyDown;
             document.onkeyup = pongGame.onKeyUp;
-
-            console.log("ended init " + ended);
         }
 
         // ############################# MENUS #############################
@@ -359,12 +357,10 @@ SUGGESTIONS:
         var game = {
 
             render: function (time) {
-                console.log("ended render " + ended);
                 this.timer = this.round = pongGame.secondsCounter();
                 roundTime = pongGame.secondsCounter();
 
                 // console.log('tiempo='+time);
-                // console.log(roundTime);
 
                 //========= STEP 5: Drawing the primitive ===============
 
@@ -385,37 +381,24 @@ SUGGESTIONS:
                 pongGame.ballCollisions(); // Limiting ball to canvas
 
                 // Animating players
-                if (this.gameType === "single") pongGame.player1Animation()
-                else if (this.gameType === "multi") {
+                if (this.gameType === "single") {
+                    pongGame.player1Animation();
+                    pongGame.aiAnimation();
+                } else if (this.gameType === "multi") {
                     pongGame.player1Animation();
                     pongGame.player2Animation();
-                } else {
-                    // Add AI here
                 }
 
-                // Updating score
-
-
                 // Speed increased by time
-
-                // Ball in intended direction?
-
-                // AI player movement
-
-                // AI collision
-
-                // End of game
-
+                
                 pongGame.ballAnimation(); // Ball animation
                 pongGame.playerCollisions(); // Player collision limit - ball & wall
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-                // console.log("Loading");
                 if (ended === false) {
                     window.requestAnimationFrame(pongGame.render); // Comment it to avoid animation
                 }
-                // console.log("loaded");
             },
 
             // ############################# GAME OBJECTS #############################
@@ -429,16 +412,27 @@ SUGGESTIONS:
             // ############################# ANIMATIONS & COLLISIONS #############################
 
             ballAnimation: function () {
-                ball.x += ball.movementX;
+                ball.x += ball.movementX; // Si pongo aqui el pongGame.getRandomOption(); la pelota se mueve en zig zag - posible minijuego??
                 ball.y += ball.movementY;
             },
 
             player1Animation: function () {
-                player1.y += player1.move; // Player animation
+                player1.y += player1.move;
             },
 
             player2Animation: function () {
                 player2.y += player2.move; // Player animation
+            },
+
+            aiAnimation: function () {
+                if (player2.y > ball.y - (player2.height / 2)) {
+                    if (ball.movementX > 0) player2.y -= 0.01;
+                    else player2.y -= 0.01;
+                }
+                if (player2.y < ball.y - (player2.height / 2)) {
+                    if (ball.movementX > 0) player2.y += 0.01;
+                    else player2.y += 0.01;
+                }
             },
 
             playerCollisions: function () {
@@ -515,14 +509,14 @@ SUGGESTIONS:
 
                 // Ball is redirected to loser's side
                 if (loser == player2) {
-                    ball.movementX = 0.015;
+                    ball.movementX = direction.right;
                     ball.movementY = pongGame.getRandomFloat(0.015, -0.015);
 
                     pongGame.updateScoreboard('scoreboard1', player1); // Update score
                 } else {
-                    ball.movementX = -0.015;
+                    ball.movementX = direction.left;
                     ball.movementY = pongGame.getRandomFloat(0.014, -0.015)
-
+                    
                     pongGame.updateScoreboard('scoreboard2', player2); // Update score
                 }
 
@@ -542,18 +536,19 @@ SUGGESTIONS:
                 player.score += 1;
                 var count = document.getElementById(playerScoreboard).innerHTML = player.score;
 
-                console.log ("ended " + ended + " scores " + player1.score + " " + player2.score);
-                if (player1.score == 2 || player2.score == 2) {
+                pongGame.clearScoreboard();
+            },
+
+            // Clear scoreboard upong ending game
+            clearScoreboard: function () {
+                if (player1.score == 5 || player2.score == 5) {
                     ended = true;
                     document.getElementById("overlay").style.display = "block";
                     document.getElementById('scoreboard1').innerHTML = document.getElementById('scoreboard2').innerHTML = 0;
-                    console.log(player1.score + " " + player2.score);
-                    player1.score = player2.score = 0;
+                    player1.score = player2.score = 0; // Restart scoreboard                
+                    ball.movementX = pongGame.getRandomOption(); // Ball moves towards random player
                 }
-                console.log ("after changing ended " + ended);
             },
-
-            // Clear scoreboard
 
             // ############################# TOOLS #############################
 
@@ -583,24 +578,14 @@ SUGGESTIONS:
                 if (parseFloat(str) == 0.000 || parseFloat(str) == 0.001 || parseFloat(str) == -0.001) pongGame.getRandomFloat(min, max)
                 else return parseFloat(str);
             },
+
+            // Generate random option
+            getRandomOption: function () {
+                return res = (Math.random() < 0.5) ? direction.left : direction.right;
+            },
         }
 
-        // var logo = {
-        //     pLogo: function (line) {
-        //         var result = {
-        //             'x': line === 1 ? -1 : line === 2 ? 1 : 3,
-        //             'y': line === 1 ? 2 : line === 2 ? 1 : 3,
-        //             'width': line === 1 ? 0.05 : line === 2 ? 1 : 3,
-        //             'height': line === 1 ? 0.2 : line === 2 ? 1 : 3,
-        //             'color': [255, 255, 0, 1],
-        //         }
-
-        //         return result;
-        //     }
-        // }
-
         var pongGame = Object.assign({}, game);
-        // window.onload = gameMenu();
 
     </script>
 
