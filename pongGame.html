@@ -1,4 +1,28 @@
 <!--
+MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELE
+MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELE
+ME                                        LE
+ME     MMMMMMMMM            MMMMMMMMM     LE
+ME     MMMMMMMMMM          MMMMMMMMMM     LE
+ME     MMMMMMMMMMM        MMMMMMMMMMM     LE
+ME     MMMMMMMMMMMM      MMMMMMMMMMMM     LE
+ME     MMMMMMMM MMMM    MMMM MMMMMMMM     LE
+ME     MMMMMMMM  MMMM  MMMM  MMMMMMMM     LE
+ME     MMMMMMMM   MMMMMMMM   MMMMMMMM     LE
+ME     MMMMMMMM    MMMMMM    MMMMMMMM     LE
+ME     MMMMMMMM              MMMMMMMM     LE
+ME     MMMMMMMM              MMMMMMMM     LE
+ME     MMMMMMMM              MMMMMMMM     LE
+ME     MMMMMMMM              MMMMMMMM     LE
+ME     MMMMMMMM              MMMMMMMM     LE
+ME                                        LE
+ME     Mele13                             LE
+ME                                        LE
+MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELE
+MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELE
+-->
+
+<!--
 
 TO DO:
 - more balls?
@@ -25,7 +49,19 @@ SUGGESTIONS:
 <!-- STEP 1: Prepare the canvas -->
 
 <head>
+    <!-- Imports -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+
     <style>
+        body { background-color: black;}
+        h1 { color: black; }
+        .h1 { color: white; font-size: 25px; margin-bottom: -15%;}
+        .right { text-align: right; }
+        .left { text-align: left; }
+        /* .bottom { margin-top: 10%; }
+        .top { margin-top: 20%; } */
+
         #my_Canvas {
             border: 5px dotted red;
             padding-left: 0;
@@ -33,8 +69,8 @@ SUGGESTIONS:
             margin: auto;
             display: block;
             border-radius: 15px;
-            background-color: grey;
-            margin-top: 5%;
+            background-color: white;
+            /* margin-top: 5%; */
         }
 
         #overlay {
@@ -46,14 +82,14 @@ SUGGESTIONS:
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.2);
             z-index: 2;
         }
 
         #text {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            /* top: 18%;
+            left: 50%; */
             font-size: 50px;
             color: white;
             transform: translate(-50%, -50%);
@@ -62,8 +98,8 @@ SUGGESTIONS:
 
         #winner {
             position: absolute;
-            top: 75%;
-            left: 50%;
+            /* top: 75%;
+            left: 50%; */
             font-size: 40px;
             color: white;
             transform: translate(-50%, -50%);
@@ -83,33 +119,32 @@ SUGGESTIONS:
             z-index: 2;
         }
 
-        #scoreboard3,
-        #scoreboard4 {
-            display: none;
-        }
+        #divScoreboard3, #divScoreboard4,
+        #rightBottom, #leftBottom, #rightTop, #leftTop { display: none; }
 
-        #overlay,
-        #gameOverOverlay,
-        #instructionsOverlay {
-            text-align: center
-        }
+        #overlay, #gameOverOverlay, #instructionsOverlay { text-align: center }
 
-        #instructionsOverlay {
-            display: none;
-        }
-
-        #top {
+        /* Scoreboard columns */
+        #scoreboard {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             width: 100%;
-            /* background-color: red; */
-            height: 15%;
         }
-
-        #bottom {
-            width: 100%;
-            /* background-color: blue; */
-            height: 85%;
+        .scoreH1 {
+            font-size: 25px;
+            background: url('https://cdn.glitch.global/29b2a8e1-ef7a-4a12-8595-aee0bdc1bb61/Scoreboard_opposite_2.png?v=1664197008545') 0 0 no-repeat;
+            background-size: 100% 100%;
+            width: 8%;
+            margin-left: auto;
+            margin-right: auto;
         }
+        .score-column { flex: 25%; }
 
+        /* Instructions Overlay */
+        #instructionsOverlay { display: none; }
+        #top { width: 100%; }
+        #bottom { width: 100%; height: 85%; }
         .inner {
             width: 50%;
             height: 50%;
@@ -120,41 +155,77 @@ SUGGESTIONS:
             padding: 16px;
         }
 
-        /* 
-        #goalLimit .button, #gameMode .button {
-            -webkit-transition: all 0.3s ease;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: inline-block;
-            padding: 15px;
-            color: #fff;
-            font-family: sans-serif;
-            margin-right: 10px;
-            margin-left: 10px;
-            background-color: #000;
-            margin-bottom: 20px
-        } */
+        /* Game type, goal limit & game mode buttons */
+        #goalLimit button, #gameMode button, .gameTypeButton { border-radius: 4px; border: 2px white; }
+        /* Selected - only goal limit & game mode buttons*/
+        #goalLimit button.selected, #gameMode button.selected { background-color: red; color: black; }
 
-        #goalLimit button.selected,
-        #gameMode button.selected {
-            background-color: green;
-            color: black;
+        .center { text-align: center; }
+
+        /* Player instruction images */
+        .upDown {
+            width: 45%;
+            height: 45%;
+            /* padding: 8%; */
         }
+
+        .rightLeft {
+            width: 65%;
+            height: 65%;
+            /* padding: 10%; */
+        }
+
+        /* 3 column game data: canvas + player instructions */
+        .row { display: flex; }
+        .column {
+            height: 100%;
+            /* padding: 10px; */
+            /* margin: 5px; */
+            flex: 33.33%;
+        }
+        .inside {
+            width: 100%;
+            flex: 0 0 50px;
+            /* margin: 5px; */
+            height: 50%;
+        }
+
+        /* Game menu */
+        #mainMenu-container {
+            margin: 11%;
+        }
+        #mainMenu {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .menu-container button {
+            width: 15%;
+            height: 30px;
+            margin-bottom: 0.5%;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        #goalLimit button, #gameMode button {width: 8%;}
+
     </style>
 </head>
 
 <body>
     <div id="overlay">
-        <div id="menu-container">
-            <div id="text">Pong</div>
-            <button id="singlePlayer" onclick="pongGame.play('single')">Single player</button>
-            <button id="multiplayer" onclick="pongGame.play('multi')">Multiplayer</button>
-            <button id="3player" onclick="pongGame.play('3p')">3p</button>
-            <button id="4player" onclick="pongGame.play('4p')">4p</button>
-            <button id="instructions" onclick="pongGame.instructions(true)">Instrutions</button>
+        <div id="mainMenu-container" class="menu-container">
+            <div id="mainMenu">
+                <div id="text">Pong</div>
+                <button id="singlePlayer" class="gameTypeButton" onclick="pongGame.play('single')">Single player</button>
+                <button id="multiplayer" class="gameTypeButton" onclick="pongGame.play('multi')">Multiplayer</button>
+                <button id="3player" class="gameTypeButton" onclick="pongGame.play('3p')">3p</button>
+                <button id="4player" class="gameTypeButton" onclick="pongGame.play('4p')">4p</button>
+                <button id="instructions" class="gameTypeButton" onclick="pongGame.instructions(true)">Instrutions</button>
+            </div>            
 
             <div id="goalLimit">
-                Goal limit
+                <h3 id="goalLimitHeader">Goal limit</h3>
                 <button id="2goals" class="goalButton selected" value="2">2</button>
                 <button id="5goals" class="goalButton" value="5">5</button>
                 <button id="10goals" class="goalButton" value="10">10</button>
@@ -162,20 +233,19 @@ SUGGESTIONS:
             </div>
 
             <div id="gameMode">
-                GameMode
+                <h3 id="gameModeHeader">GameMode</h3>
                 <button id="easy" class="gameButton selected" value="easy">Easy</button>
                 <button id="medium" class="gameButton" value="medium">Medium</button>
                 <button id="hard" class="gameButton" value="hard">Hard</button>
-                <button id="impossible" class="gameButton" value="impossible">Impossible</button>
-                <label>--- * ---</label>
-                <button id="arcade" class="gameButton" value="arcade">Arcade</button>
+                <button id="impossible" class="gameButton" value="impossible">Impossible</button>                
+                <div><button id="arcade" class="gameButton" value="arcade">Arcade</button></div>
             </div>
         </div>
     </div>
 
     <div id="gameOverOverlay">
-        <div id="menu-container">
-            <div id="text">GAME OVER</div>
+        <div class="menu-container">
+            <div id="gameText">GAME OVER</div>
             <div id="winnerText"></div>
             <button id="playAgain" onclick="pongGame.playAgain()">Play again</button>
             <button id="exit" onclick="pongGame.exit()">Exit</button>
@@ -183,7 +253,7 @@ SUGGESTIONS:
     </div>
 
     <div id="instructionsOverlay">
-        <div id="menu-container">
+        <div class="menu-container">
             <div id="top">Instructions</div>
             <div id="bottom">
                 <div class="inner">Player 1</div>
@@ -191,38 +261,65 @@ SUGGESTIONS:
                 <div class="inner">Player 3</div>
                 <div class="inner">Player 4</div>
                 <div class="general">General instructions</div>
-                <button id="exit" onclick="pongGame.exit()">Back</button>
+                <button id="back" onclick="pongGame.exit()">Back</button>
             </div>
         </div>
     </div>
 
-    <div id="container">
+    <div id="container center">
         <div id="scoreboard">
-            <div id="scoreboard1">0</div>
-            <div id="scoreboard2">0</div>
-            <div id="scoreboard3">1</div>
-            <div id="scoreboard4">1</div>
-        </div>
-        <canvas width="600" height="550" id="my_Canvas"></canvas>
-        <div id="leftSide">
-            <div id="leftTop">Player 1</div>
-            <div id="leftBottom">Player 2</div>
-        </div>
-        <div id="rightSide">
-            <div id="leftBottom">Player 3</div>
-            <div id="leftTop">Player 4</div>
+            <div id="divScoreboard1" class="score-column center">
+                <h1 id="scoreboard1" class="scoreH1">0</h1>
+            </div>
+            <div id="divScoreboard2" class="score-column center">
+                <h1 id="scoreboard2" class="scoreH1">0</h1>
+            </div>
+            <div id="divScoreboard3" class="score-column center">
+                <h1 id="scoreboard3" class="scoreH1">1</h1>
+            </div>
+            <div id="divScoreboard4" class="score-column center">
+                <h1 id="scoreboard4" class="scoreH1">1</h1>
+            </div>
         </div>
 
-        <!-- <p>
-            Instructions:
-            - Player 1 Up: || Down:
-             -> ↑ ↓
-            - Plyer 2 Up: w || Down: s
-        </p> -->
+        <!-- Game: 3 row - canvas + player instructions -->
+        <div class="row">
+            <div class="column outer center">
+                <div id="leftTop" class="inside">
+                    <h1 id="player1Controls" class="h1 top left">Player 1</h1>
+                    <img id="awsd" class="upDown"
+                        src="https://cdn.glitch.global/29b2a8e1-ef7a-4a12-8595-aee0bdc1bb61/AWSD_opposite.png?v=1664197009819"
+                        alt="Player 1 controls">
+                </div>
+                <div id="leftBottom" class="inside">
+                    <h1 id="player3Controls" class="h1 left bottom">Player 3</h1>
+                    <img id="8456" class="rightLeft"
+                        src="https://cdn.glitch.global/29b2a8e1-ef7a-4a12-8595-aee0bdc1bb61/8456_opposite.png?v=1664197008674"
+                        alt="Player 3 controls">
+                </div>
+            </div>
+            <div class="column">
+                <canvas width="600" height="550" id="my_Canvas"></canvas>
+            </div>
+            <div class="column outer center">
+                <div id="rightTop" class="inside">
+                    <h1 id="player2Controls" class="h1 top right">Player 2</h1>
+                    <img id="arrows" class="upDown"
+                        src="https://cdn.glitch.global/29b2a8e1-ef7a-4a12-8595-aee0bdc1bb61/ARROWS_opposite.png?v=1664197009151"
+                        alt="Player 2 controls">
+                </div>
+                <div id="rightBottom" class="inside">
+                    <h1 id="player4Controls" class="h1 right bottom">Player 4</h1>
+                    <img id="ijkl" class="rightLeft"
+                        src="https://cdn.glitch.global/29b2a8e1-ef7a-4a12-8595-aee0bdc1bb61/IJKL_opposite.png?v=1664197010550"
+                        alt="Player 4 controls">
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- vertex Shader -->
-    <script id="vertex-shader" type="x-shader/x-vertex">
+        <!-- vertex Shader -->
+        <script id="vertex-shader" type="x-shader/x-vertex">
        #version 300 es
        precision mediump float;
 
@@ -236,8 +333,8 @@ SUGGESTIONS:
   </script>
 
 
-    <!-- fragment Shader -->
-    <script id="fragment-shader" type="x-shader/x-fragment">
+        <!-- fragment Shader -->
+        <script id="fragment-shader" type="x-shader/x-fragment">
       #version 300 es
       precision mediump float;
 
@@ -250,687 +347,702 @@ SUGGESTIONS:
     }
   </script>
 
-    <script>
+        <script>
 
-        // Basic variables
-        var colorLoc;
-        var vertexBuffer;
-        var goals = [1, 3, 5, 10]; // Goals per game
-        var ended; // Determines if a game has finished or not
-        var left = -0.015;
-        var right = 0.015;
+            // Basic variables
+            var colorLoc;
+            var vertexBuffer;
+            var goals = [1, 3, 5, 10]; // Goals per game
+            var ended; // Determines if a game has finished or not
+            var left = -0.015;
+            var right = 0.015;
 
-        // Game direction - ball & player movement
-        var direction = {
-            'standard': 0,
-            'left': -0.015,
-            'right': 0.015,
-            'up': 0.01, 'down': -0.01
-        }
+            // Game direction - ball & player movement
+            var direction = {
+                'standard': 0,
+                'left': -0.015,
+                'right': 0.015,
+                'up': 0.01, 'down': -0.01
+            }
 
-        // ---------------------------------------- Modified in class ----------------------------------------
-        //      var ball = {
-        //        'x':-0.5, 'y':0.3,
-        //        'width':0.1, 'height':0.1,
-        //        'color':[1,1,0,1],
-        //        'speedX':0.01, 'speedY':-0.02
-        //      }
+            // ---------------------------------------- Modified in class ----------------------------------------
+            //      var ball = {
+            //        'x':-0.5, 'y':0.3,
+            //        'width':0.1, 'height':0.1,
+            //        'color':[1,1,0,1],
+            //        'speedX':0.01, 'speedY':-0.02
+            //      }
 
-        // var player1 = {
-        //   'x':-0.8, 'y':-0.3,
-        //   'width':0.1, 'height':0.4,
-        //   'color':[1,1,1,1],
-        //   'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
-        // }
+            // var player1 = {
+            //   'x':-0.8, 'y':-0.3,
+            //   'width':0.1, 'height':0.4,
+            //   'color':[1,1,1,1],
+            //   'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
+            // }
 
-        //      var player2 = {
-        //        'x':0.7, 'y':-0.3,
-        //        'width':0.1, 'height':0.4,
-        //        'color':[1,1,1,1],
-        //        'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
-        //      }
+            //      var player2 = {
+            //        'x':0.7, 'y':-0.3,
+            //        'width':0.1, 'height':0.4,
+            //        'color':[1,1,1,1],
+            //        'move':0 // -1 -> moving down; 0 -> static; 1 -> moving up
+            //      }
 
-        function drawRectangle(r) {
-            x = r.x;
-            y = r.y;
-            w = r.width;
-            h = r.height;
-            v = new Float32Array([x, y + h, x + w, y + h, x, y,
-                x, y, x + w, y + h, x + w, y]);
-            // Pass the vertex data to the buffer
-            gl.bufferData(gl.ARRAY_BUFFER, v, gl.STATIC_DRAW);
-            gl.uniform4fv(colorLoc, r.color); // We add the v because it's a vector
-            gl.drawArrays(gl.TRIANGLES, 0, 6); // Method that paints elements - rectangles, etc
-        }
-        // ---------------------------------------- End class modification ----------------------------------------
+            function drawRectangle(r) {
+                x = r.x;
+                y = r.y;
+                w = r.width;
+                h = r.height;
+                v = new Float32Array([x, y + h, x + w, y + h, x, y,
+                    x, y, x + w, y + h, x + w, y]);
+                // Pass the vertex data to the buffer
+                gl.bufferData(gl.ARRAY_BUFFER, v, gl.STATIC_DRAW);
+                gl.uniform4fv(colorLoc, r.color); // We add the v because it's a vector
+                gl.drawArrays(gl.TRIANGLES, 0, 6); // Method that paints elements - rectangles, etc
+            }
+            // ---------------------------------------- End class modification ----------------------------------------
 
-        function init(gameType, goalNumber, computerGoal, gameMode) {
-            // Game initialization
-            this.gameType = gameType;
-            this.goalNumber = goalNumber;
-            this.computerGoal = computerGoal;
-            this.gameMode = gameMode;
+            function init(gameType, goalNumber, computerGoal, gameMode) {
+                // Game initialization
+                this.gameType = gameType;
+                this.goalNumber = goalNumber;
+                this.computerGoal = computerGoal;
+                this.gameMode = gameMode;
 
-            pongGame.createPlayers(); // Player creation
-            ball = pongGame.newBall(0, 0, "ball", 0.05, 0.05, 0.015, 0.01); // Easy mode ball            
-            pongGame.gameModeConfiguration(); // Modify values depending on gamemode   
+                pongGame.createPlayers(); // Player creation
+                ball = pongGame.newBall(0, 0, "ball", 0.05, 0.05, 0.015, 0.01); // Easy mode ball            
+                pongGame.gameModeConfiguration(); // Modify values depending on gamemode   
 
-            // Modifying number of goals the computer needs to win depending on gamemode
-            if (gameMode == "medium") computerGoal *= 2;
-            if (gameMode == "hard") computerGoal *= 5;
-            if (gameMode == "impossible") computerGoal *= 10;
+                // Modifying number of goals the computer needs to win depending on gamemode
+                if (gameMode == "medium") computerGoal *= 2;
+                if (gameMode == "hard") computerGoal *= 5;
+                if (gameMode == "impossible") computerGoal *= 10;
 
-            // ============ STEP 1: Creating a canvas=================
-            canvas = document.getElementById('my_Canvas');
-            gl = canvas.getContext('webgl2');
+                // ============ STEP 1: Creating a canvas=================
+                canvas = document.getElementById('my_Canvas');
+                gl = canvas.getContext('webgl2');
 
-            //======= STEP 2: Defining and storing the geometry=======
-            var vertices = [
-                -0.8, 0.5,
-                0.0, 0.5,
-                -0.25, 0.25,
-                0.0, 0.0
-            ];
+                //======= STEP 2: Defining and storing the geometry=======
+                var vertices = [
+                    -0.8, 0.5,
+                    0.0, 0.5,
+                    -0.25, 0.25,
+                    0.0, 0.0
+                ];
 
-            // Create an empty buffer object to store the vertex buffer
-            vertex_buffer = gl.createBuffer();
+                // Create an empty buffer object to store the vertex buffer
+                vertex_buffer = gl.createBuffer();
 
-            // Bind appropriate array buffer to it
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-
-            // Unbind the buffer
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            //========== STEP 3: Create and compile shaders ==========
-
-            // Create a vertex shader object
-            var vertShader = gl.createShader(gl.VERTEX_SHADER);
-
-            // Attach vertex shader source code
-            var script = document.getElementById('vertex-shader');
-            var shaderString = script.text.trim();
-            gl.shaderSource(vertShader, shaderString);
-
-            // Compile the vertex shader
-            gl.compileShader(vertShader);
-
-            // Create fragment shader object
-            var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-
-            // Attach fragment shader source code
-            script = document.getElementById('fragment-shader');
-            shaderString = script.text.trim();
-            gl.shaderSource(fragShader, shaderString);
-
-            // Compile the fragmentt shader
-            gl.compileShader(fragShader);
-
-            // Create a shader program object to store the combined shader program
-            var shaderProgram = gl.createProgram();
-
-            // Attach a vertex shader
-            gl.attachShader(shaderProgram, vertShader);
-
-            // Attach a fragment shader
-            gl.attachShader(shaderProgram, fragShader);
-
-            // Link both programs
-            gl.linkProgram(shaderProgram);
-
-            // Use the combined shader program object
-            gl.useProgram(shaderProgram);
-
-            //======== STEP 4: Associating shaders to buffer objects ========
-
-            // Bind vertex buffer object
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-
-            // Get the attribute location
-            var coordLocation = gl.getAttribLocation(shaderProgram, "aCoordinates");
-
-            // obtener la location del color
-            colorLoc = gl.getUniformLocation(shaderProgram, "uColor");
-
-            // Point an attribute to the currently bound VBO
-            gl.vertexAttribPointer(coordLocation, 2, gl.FLOAT, false, 0, 0);
-
-            // Enable the attribute
-            gl.enableVertexAttribArray(coordLocation);
-
-            // Unbind the buffer
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            time = 0;
-            count = 0;
-
-            pongGame.render(time);
-
-            // Recognizing keyboard
-            document.onkeydown = pongGame.onKeyDown;
-            document.onkeyup = pongGame.onKeyUp;
-        }
-
-        // ############################# RENDERING #############################
-
-        var game = {
-            render: function (time) {
-                count += 1;
-                // console.log('tiempo='+time);
-
-                //========= STEP 5: Drawing the primitive ===============
-
-                // Clear the canvas - r, g, b, a
-                gl.clearColor(0, 0, 0, 1.0);
-
-                // Clear the color buffer bit
-                gl.clear(gl.COLOR_BUFFER_BIT);
-
-                // Set the view port
-                gl.viewport(0, 0, canvas.width, canvas.height);
-
+                // Bind appropriate array buffer to it
                 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 
-                // Updates all objects - score, players & ball movement
-                pongGame.drawObjects(); // Draw objects - players & ball
-                pongGame.ballCollisions(); // Limiting ball to canvas
-
-                // Animating players
-                if (this.gameType === "single") {
-                    pongGame.playerAnimation(player1);
-                    pongGame.aiAnimation();
-                } else if (this.gameType === "multi") {
-                    pongGame.playerAnimation(player1);
-                    pongGame.playerAnimation(player2);
-                } else if (this.gameType === "3p") {
-                    pongGame.playerAnimation(player1);
-                    pongGame.playerAnimation(player2);
-                    pongGame.playerAnimation(player4);
-                } else {
-                    pongGame.playerAnimation(player1);
-                    pongGame.playerAnimation(player2);
-                    pongGame.playerAnimation(player3);
-                    pongGame.playerAnimation(player4);
-                }
-
-                // Ball speed is randomly increased - since there's no ball speed but movementX, speed
-                // cannot be increased gradually (movementX varies upon reset or hit)
-                // Being randomly increased ensures a non-boring game and avoids linear hits vs AI
-                // This method makes player3 and player4 be in disadvantage since ball moves in x axis
-                // therefore player3 and player4 always start with 1 extra goal & move slightly faster
-                if (count > 0 && count % 10 == 0) {
-                    if (ball.movementX < 0) ball.movementX -= 0.003;
-                    else ball.movementX += 0.003;
-                }
-
-                pongGame.ballAnimation(); // Ball animation
-                pongGame.playerCollisions(); // Player collision limit - ball & wall
-
+                // Unbind the buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-                if (ended === false) {
-                    window.requestAnimationFrame(pongGame.render); // Comment it to avoid animation
-                }
-            },
+                //========== STEP 3: Create and compile shaders ==========
 
-            // ############################# GAME OBJECTS #############################
+                // Create a vertex shader object
+                var vertShader = gl.createShader(gl.VERTEX_SHADER);
 
-            drawObjects: function () {
-                drawRectangle(ball); // Painting the ball
-                drawRectangle(player1); // Painting player1
-                drawRectangle(player2); // Painting player2
+                // Attach vertex shader source code
+                var script = document.getElementById('vertex-shader');
+                var shaderString = script.text.trim();
+                gl.shaderSource(vertShader, shaderString);
 
-                if (gameType === "3p") { drawRectangle(player4); pongGame.drawScoreboard(true, false); }
-                else if (gameType === "4p") {
-                    drawRectangle(player3);
-                    drawRectangle(player4);
-                    pongGame.drawScoreboard(true, true);
-                } else pongGame.drawScoreboard(false);
-            },
+                // Compile the vertex shader
+                gl.compileShader(vertShader);
 
-            // Draw player3 & player4 scoreboard
-            drawScoreboard: function (draw, both) {
-                if(draw && !both) document.getElementById('scoreboard3').style.display = "block";
-                if(draw && both) {
-                    document.getElementById('scoreboard3').style.display = "block";
-                    document.getElementById('scoreboard4').style.display = "block";
-                }
-            },
+                // Create fragment shader object
+                var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-            newPlayer: function (x, y, playerName, width, height, goals) {
-                var playerName = { // Bottom player
-                    'x': x, 'y': y,
-                    'width': width, 'height': height,
-                    'color': [1, 1, 1, 1],
-                    'move': 0, // -1 -> moving down; 0 -> static; 1 -> moving up
-                    'score': goals
-                };
+                // Attach fragment shader source code
+                script = document.getElementById('fragment-shader');
+                shaderString = script.text.trim();
+                gl.shaderSource(fragShader, shaderString);
 
-                return playerName;
-            },
+                // Compile the fragmentt shader
+                gl.compileShader(fragShader);
 
-            newBall: function (x, y, ballName, width, height, moveX, moveY) {
-                var ballName = {
-                    'x': x, 'y': y,
-                    'width': width, 'height': height,
-                    'color': [1, 1, 0, 1],
-                    'movementX': moveX, 'movementY': moveY,
-                    'hit': 0 // 0 -> none; 1 -> player1; 2-> player2; 3 -> player3; 4 -> player4
-                };
+                // Create a shader program object to store the combined shader program
+                var shaderProgram = gl.createProgram();
 
-                return ballName;
-            },
+                // Attach a vertex shader
+                gl.attachShader(shaderProgram, vertShader);
 
-            getDirection: function (left, right, dirName) {
-                var dirName = {
-                    'standard': 0,
-                    'left': left, 'right': left,
-                    'up': 0.01, 'down': -0.01
-                }
-                return dirName;
-            },
+                // Attach a fragment shader
+                gl.attachShader(shaderProgram, fragShader);
 
-            createPlayers: function () {
-                player1 = pongGame.newPlayer(-0.8, -0.15, "player1", 0.05, 0.3, 0); // Left player
-                player2 = pongGame.newPlayer(0.74, -0.15, "player2", 0.05, 0.3, 0); // Right player
-                player3 = pongGame.newPlayer(-0.15, 0.73, "player3", 0.3, 0.05, 1); // Top player || x = (width / 2) * -1
-                player4 = pongGame.newPlayer(-0.15, -0.78, "player4", 0.3, 0.05, 1); // Bottom player
-                player5 = pongGame.newPlayer(0, 0, "player5", 0, 0, 0); // Phantom player - avoid error among first goal without a player hit (4 players)
-            },
+                // Link both programs
+                gl.linkProgram(shaderProgram);
 
-            gameModeConfiguration: function () {
-                if (gameMode == "easy") { direction.left = -0.015; direction.right = 0.015; };
-                if (gameMode == "medium") { direction.left = -0.024; direction.right = 0.024; ball.movementX = 0.24; };
-                if (gameMode == "hard") { direction.left = -0.035; direction.right = 0.035; ball.movementX = 0.35; };
-                if (gameMode == "impossible") { direction.left = -0.037; direction.right = 0.037; ball.movementX = 0.37; };
-                if (gameMode == "arcade") { direction.left = -0.08; direction.right = 0.08; ball.movementX = 0.8; };
-            },
+                // Use the combined shader program object
+                gl.useProgram(shaderProgram);
 
-            // ############################# ANIMATIONS & COLLISIONS #############################
+                //======== STEP 4: Associating shaders to buffer objects ========
 
-            ballAnimation: function () {
+                // Bind vertex buffer object
+                gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 
-                if (gameMode != "arcade") { ball.x += ball.movementX; ball.y += ball.movementY; }
-                else { ball.x += pongGame.getRandomOption(); ball.y += pongGame.getRandomOption(); }
+                // Get the attribute location
+                var coordLocation = gl.getAttribLocation(shaderProgram, "aCoordinates");
 
-            },
+                // obtener la location del color
+                colorLoc = gl.getUniformLocation(shaderProgram, "uColor");
 
-            playerAnimation: function (playerName) {
-                if (playerName == player1 || playerName == player2) playerName.y += playerName.move;
-                else playerName.x += playerName.move;
-            },
+                // Point an attribute to the currently bound VBO
+                gl.vertexAttribPointer(coordLocation, 2, gl.FLOAT, false, 0, 0);
 
-            aiAnimation: function () {
-                // AI moves up
-                if (player2.y > ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
-                    else pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
-                }
-                // AI moves down
-                if (player2.y < ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015); // 0.008 noob - 0.01 no falla
-                    else pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015);
-                }
-            },
+                // Enable the attribute
+                gl.enableVertexAttribArray(coordLocation);
 
-            playerCollisions: function () {
-                // Ball & player collisions
-                if (gameType == "single" || gameType == "multi") {
-                    pongGame.playerCollisionsRightLeft();
-                } else if (gameType == "3p") {
-                    pongGame.playerCollisionsRightLeft();
-                    pongGame.playerCollisionsBottom();
-                } else {
-                    pongGame.playerCollisionsRightLeft();
-                    pongGame.playerCollisionsBottom();
-                    pongGame.playerCollisionsTop();
-                }
+                // Unbind the buffer
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-                // Player canvas limit
-                if (gameType == "single" || gameType == "multi") {
-                    pongGame.playerCanvasCollisionsTopBottom(player1, 1, -1);
-                    pongGame.playerCanvasCollisionsTopBottom(player2, 1, -1);
-                } else if (gameType == "3p") {
-                    pongGame.playerCanvasCollisionsTopBottom(player1, 0.78, -0.73);
-                    pongGame.playerCanvasCollisionsTopBottom(player2, 0.78, -0.73);
-                    pongGame.playerCanvasCollisionsRightLeft(player4, -0.75, 0.79);
-                } else {
-                    pongGame.playerCanvasCollisionsTopBottom(player1, 0.78, -0.73);
-                    pongGame.playerCanvasCollisionsTopBottom(player2, 0.78, -0.73);
-                    pongGame.playerCanvasCollisionsRightLeft(player3, -0.75, 0.79);
-                    pongGame.playerCanvasCollisionsRightLeft(player4, -0.75, 0.79);
-                }
-            },
+                time = 0;
+                count = 0;
 
-            ballCollisions: function () {
-                switch (ball.hit) {
-                    case 0: winner = player5; break;
-                    case 1: winner = player1; break;
-                    case 2: winner = player2; break;
-                    case 3: winner = player3; break;
-                    case 4: winner = player4; break;
-                };
+                pongGame.render(time);
 
-                if (gameType == "single" || gameType == "multi") {
-                    pongGame.borderResetLeftRight(winner);
-                    pongGame.borderBounceTopBottom();
-                } else {
-                    pongGame.borderResetLeftRight(winner);
-                    pongGame.borderResetTopBottom(winner);
-                    pongGame.borderBounceTopBottom();
-                }
+                // Recognizing keyboard
+                document.onkeydown = pongGame.onKeyDown;
+                document.onkeyup = pongGame.onKeyUp;
+            }
 
-                // Top & bottom bounce
-                // if (ball.x <= -1) ball.movementX *= -1; // Left border
-                // if (ball.x + ball.width >= 1) ball.movementX *= -1; // Right border
-            },
+            // ############################# RENDERING #############################
 
-            playerCollisionsRightLeft: function () {
-                if (ball.x < 0.749 && ball.x > (player2.x - player2.width) - 0.01) { // Right player
-                    if (ball.y <= player2.y + player2.height && ball.y + ball.height >= player2.y) {
-                        ball.x = (player2.x - ball.width);
-                        ball.movementX = direction.left;
-                        ball.hit = 2;
+            var game = {
+                render: function (time) {
+                    count += 1;
+                    // console.log('tiempo='+time);
+
+                    //========= STEP 5: Drawing the primitive ===============
+
+                    // Clear the canvas - r, g, b, a
+                    gl.clearColor(0, 0, 0, 1.0);
+
+                    // Clear the color buffer bit
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+
+                    // Set the view port
+                    gl.viewport(0, 0, canvas.width, canvas.height);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+                    // Updates all objects - score, players & ball movement
+                    pongGame.drawObjects(); // Draw objects - players & ball
+                    pongGame.ballCollisions(); // Limiting ball to canvas
+
+                    // Animating players
+                    if (this.gameType === "single") {
+                        pongGame.playerAnimation(player1);
+                        pongGame.aiAnimation();
+                    } else if (this.gameType === "multi") {
+                        pongGame.playerAnimation(player1);
+                        pongGame.playerAnimation(player2);
+                    } else if (this.gameType === "3p") {
+                        pongGame.playerAnimation(player1);
+                        pongGame.playerAnimation(player2);
+                        pongGame.playerAnimation(player4);
+                    } else {
+                        pongGame.playerAnimation(player1);
+                        pongGame.playerAnimation(player2);
+                        pongGame.playerAnimation(player3);
+                        pongGame.playerAnimation(player4);
                     }
-                }
-                if (ball.x < -0.749 && ball.x > (player1.x - player1.width) + 0.01) { // Left player
-                    if (ball.y <= player1.y + player1.height && ball.y + ball.height >= player1.y) {
-                        ball.x = (player1.x + ball.width);
-                        ball.movementX = direction.right;
-                        ball.hit = 1;
+
+                    // Ball speed is randomly increased - since there's no ball speed but movementX, speed
+                    // cannot be increased gradually (movementX varies upon reset or hit)
+                    // Being randomly increased ensures a non-boring game and avoids linear hits vs AI
+                    // This method makes player3 and player4 be in disadvantage since ball moves in x axis
+                    // therefore player3 and player4 always start with 1 extra goal & move slightly faster
+                    if (count > 0 && count % 10 == 0) {
+                        if (ball.movementX < 0) ball.movementX -= 0.003;
+                        else ball.movementX += 0.003;
                     }
-                }
-            },
 
-            playerCollisionsBottom: function () {
-                if (ball.y < -0.749 && ball.y > (player4.y - player4.height) + 0.01) { // Bottom player
-                    if (ball.x <= player4.x + player4.width && ball.x + ball.width >= player4.x) {
-                        ball.y = (player4.y + ball.height);
-                        ball.movementY = direction.up;
-                        ball.hit = 4;
+                    pongGame.ballAnimation(); // Ball animation
+                    pongGame.playerCollisions(); // Player collision limit - ball & wall
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    if (ended === false) {
+                        window.requestAnimationFrame(pongGame.render); // Comment it to avoid animation
                     }
-                }
-            },
+                },
 
-            playerCollisionsTop: function () {
-                if (ball.y < 0.749 && ball.y > (player3.y - player3.height) - 0.01) { // Top player
-                    if (ball.x <= player3.x + player3.width && ball.x + ball.width >= player3.x) {
-                        ball.y = (player3.y - ball.height);
-                        ball.movementY = direction.down;
-                        ball.hit = 3;
+                // ############################# GAME OBJECTS #############################
+
+                drawObjects: function () {
+                    drawRectangle(ball); // Painting the ball
+                    drawRectangle(player1); // Painting player1
+                    drawRectangle(player2); // Painting player2
+
+                    if (gameType === "single") pongGame.drawScoreboard(false, false, true);
+                    else if (gameType == "multi") pongGame.drawScoreboard(true, false, true);
+                    else if (gameType === "3p") { drawRectangle(player4); pongGame.drawScoreboard(false, true, false); }
+                    else if (gameType === "4p") {
+                        drawRectangle(player3);
+                        drawRectangle(player4);
+                        pongGame.drawScoreboard(true, true, false);
                     }
-                }
-            },
+                },
 
-            playerCanvasCollisionsTopBottom: function (playerName, topValue, bottomValue) {
-                if (playerName.y >= (topValue - playerName.height)) playerName.y = (topValue - playerName.height); // Top limit
-                if (playerName.y <= bottomValue) playerName.y = bottomValue; // Bottom limit
-            },
+                // Draw player3 & player4 scoreboard
+                drawScoreboard: function (both, third, first) {
+                    document.getElementById('leftTop').style.display = "block"; // 1 player
 
-            playerCanvasCollisionsRightLeft: function (playerName, leftValue, rightValue) {
-                if (playerName.x >= (rightValue - playerName.width)) playerName.x = (rightValue - playerName.width); // Left limit
-                if (playerName.x <= leftValue) playerName.x = leftValue; // Right limit
-            },
+                    if (both && !third && first) { // 2 players
+                        document.getElementById('leftTop').style.display = "block";
+                        document.getElementById('rightTop').style.display = "block";
+                    }
+                    if (!both && third && !first) { // 3 players
+                        document.getElementById('divScoreboard3').style.display = "block";
+                        document.getElementById('leftBottom').style.display = "block";
+                        document.getElementById('rightTop').style.display = "block";
+                    }
+                    if (both && third && !first) { // 4 players
+                        document.getElementById('divScoreboard3').style.display = "block";
+                        document.getElementById('divScoreboard4').style.display = "block";
+                        document.getElementById('leftBottom').style.display = "block";
+                        document.getElementById('rightBottom').style.display = "block";
+                        document.getElementById('rightTop').style.display = "block";
+                    }
+                },
 
-            borderResetLeftRight: function (winner) {
-                if (ball.x <= -1) { pongGame.newTurn(winner, player1); ball.hit = 0; }// Left border reset
-                if (ball.x + ball.width >= 1) { pongGame.newTurn(winner, player2); ball.hit = 0; } // Right border reset
-            },
+                newPlayer: function (x, y, playerName, width, height, goals) {
+                    var playerName = { // Bottom player
+                        'x': x, 'y': y,
+                        'width': width, 'height': height,
+                        'color': [1, 1, 1, 1],
+                        'move': 0, // -1 -> moving down; 0 -> static; 1 -> moving up
+                        'score': goals
+                    };
 
-            borderResetTopBottom: function (winner) {
-                if (ball.y <= -1) pongGame.newTurn(winner, player4); // Bottom border reset
-                if (gameType != "3p") if (ball.y + ball.height >= 1) pongGame.newTurn(winner, player3); // Top border reset
-            },
+                    return playerName;
+                },
 
-            borderBounceTopBottom: function () {
-                if (ball.y + ball.width >= 1) ball.movementY *= -1; // Top border bounce
-                if (gameType != "3p") if (ball.y <= -1) ball.movementY *= -1; // Bottom border bounce
-            },
+                newBall: function (x, y, ballName, width, height, moveX, moveY) {
+                    var ballName = {
+                        'x': x, 'y': y,
+                        'width': width, 'height': height,
+                        'color': [1, 1, 0, 1],
+                        'movementX': moveX, 'movementY': moveY,
+                        'hit': 0 // 0 -> none; 1 -> player1; 2-> player2; 3 -> player3; 4 -> player4
+                    };
 
-            // ############################# KEYBOARD DETECTING #############################
+                    return ballName;
+                },
 
-            // Processing keyDown through flag
-            onKeyDown: function (key) { // Player state changes to moving up or down by key pressing
-                switch (key.keyCode) {  // Player3 & player4 are lightly faster
-                    case 87: player1.move = 0.02; break; // Keybind w - up
-                    case 83: player1.move = -0.02; break; // Keybind s - down
-                    case 38: player2.move = 0.02; break; // Arrow up
-                    case 40: player2.move = -0.02; break; // Arrow down
-                    case 74: player3.move = -0.03; break; // Keybind j - left
-                    case 76: player3.move = 0.03; break; // Keybind l - right
-                    case 100: player4.move = -0.03; break; // Keybind 4 (numlock) - left
-                    case 102: player4.move = 0.03; break; // Keybind 6 (numlock) - right
-                }
-            },
+                getDirection: function (left, right, dirName) {
+                    var dirName = {
+                        'standard': 0,
+                        'left': left, 'right': left,
+                        'up': 0.01, 'down': -0.01
+                    }
+                    return dirName;
+                },
 
-            // Processing keyUp through flag
-            onKeyUp: function (key) {
-                player1.move = 0;
-                player2.move = 0;
-                player3.move = 0;
-                player4.move = 0;
-            },
+                createPlayers: function () {
+                    player1 = pongGame.newPlayer(-0.8, -0.15, "player1", 0.05, 0.3, 0); // Left player
+                    player2 = pongGame.newPlayer(0.74, -0.15, "player2", 0.05, 0.3, 0); // Right player
+                    player3 = pongGame.newPlayer(-0.15, 0.73, "player3", 0.3, 0.05, 1); // Top player || x = (width / 2) * -1
+                    player4 = pongGame.newPlayer(-0.15, -0.78, "player4", 0.3, 0.05, 1); // Bottom player
+                    player5 = pongGame.newPlayer(0, 0, "player5", 0, 0, 0); // Phantom player - avoid error among first goal without a player hit (4 players)
+                },
 
-            // ############################# GAME DEVELOPMENT #############################
+                gameModeConfiguration: function () {
+                    if (gameMode == "easy") { direction.left = -0.015; direction.right = 0.015; };
+                    if (gameMode == "medium") { direction.left = -0.024; direction.right = 0.024; ball.movementX = 0.24; };
+                    if (gameMode == "hard") { direction.left = -0.035; direction.right = 0.035; ball.movementX = 0.35; };
+                    if (gameMode == "impossible") { direction.left = -0.037; direction.right = 0.037; ball.movementX = 0.37; };
+                    if (gameMode == "arcade") { direction.left = -0.08; direction.right = 0.08; ball.movementX = 0.8; };
+                },
 
-            // Start game
-            play: function (type) {
-                pongGame.gameMenu(false);
-                ended = false;
-                init(type, goalNumber, computerGoal, gameMode);
-            },
+                // ############################# ANIMATIONS & COLLISIONS #############################
 
-            // Play again - same mode (single, multiplayer, 3 players, 4 players)
-            playAgain: function () {
-                pongGame.endingMenu(false);
-                ended = false;
-                init(gameType, goalNumber, computerGoal, gameMode);
-            },
+                ballAnimation: function () {
 
-            // Resets turn when ball is thrown out of the canvas
-            newTurn: function (winner, loser) {
+                    if (gameMode != "arcade") { ball.x += ball.movementX; ball.y += ball.movementY; }
+                    else { ball.x += pongGame.getRandomOption(); ball.y += pongGame.getRandomOption(); }
 
-                // Reset ball values
-                ball.x = 0;
-                ball.y = 0;
-                ball.hit = 0;
+                },
 
-                // Ball is redirected to loser's side
-                switch (winner) {
-                    case player1: scoreboard = 'scoreboard1'; break;
-                    case player2: scoreboard = 'scoreboard2'; break;
-                    case player3: scoreboard = 'scoreboard3'; break;
-                    case player4: scoreboard = 'scoreboard4'; break;
-                }
+                playerAnimation: function (playerName) {
+                    if (playerName == player1 || playerName == player2) playerName.y += playerName.move;
+                    else playerName.x += playerName.move;
+                },
 
-                switch (loser) {
-                    case player1: pongGame.newTurnAux(winner, direction.right, 0.015, -0.015, scoreboard, ball.movementX, ball.movementY); break;
-                    case player2: pongGame.newTurnAux(winner, direction.left, 0.014, -0.015, scoreboard, ball.movementX, ball.movementY); break;
-                    case player3: pongGame.newTurnAux(winner, direction.up, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
-                    case player3: pongGame.newTurnAux(winner, direction.up, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
-                    case player4: pongGame.newTurnAux(winner, direction.down, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
-                }
-            },
+                aiAnimation: function () {
+                    // AI moves up
+                    if (player2.y > ball.y - (player2.height / 2)) {
+                        if (ball.movementX > 0) pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
+                        else pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
+                    }
+                    // AI moves down
+                    if (player2.y < ball.y - (player2.height / 2)) {
+                        if (ball.movementX > 0) pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015); // 0.008 noob - 0.01 no falla
+                        else pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015);
+                    }
+                },
 
-            // Auxiliar function for newTurn - updates ball movement & scoreboard
-            newTurnAux: function (winner, dir, float1, float2, scoreboard, ball1, ball2) {
-                ball1 = dir;
-                ball2 = pongGame.getRandomFloat(float1, float2);
+                playerCollisions: function () {
+                    // Ball & player collisions
+                    if (gameType == "single" || gameType == "multi") {
+                        pongGame.playerCollisionsRightLeft();
+                    } else if (gameType == "3p") {
+                        pongGame.playerCollisionsRightLeft();
+                        pongGame.playerCollisionsBottom();
+                    } else {
+                        pongGame.playerCollisionsRightLeft();
+                        pongGame.playerCollisionsBottom();
+                        pongGame.playerCollisionsTop();
+                    }
 
-                pongGame.updateScoreboard(scoreboard, winner); // Update score
-            },
+                    // Player canvas limit
+                    if (gameType == "single" || gameType == "multi") {
+                        pongGame.playerCanvasCollisionsTopBottom(player1, 1, -1);
+                        pongGame.playerCanvasCollisionsTopBottom(player2, 1, -1);
+                    } else if (gameType == "3p") {
+                        pongGame.playerCanvasCollisionsTopBottom(player1, 0.78, -0.73);
+                        pongGame.playerCanvasCollisionsTopBottom(player2, 0.78, -0.73);
+                        pongGame.playerCanvasCollisionsRightLeft(player4, -0.75, 0.79);
+                    } else {
+                        pongGame.playerCanvasCollisionsTopBottom(player1, 0.78, -0.73);
+                        pongGame.playerCanvasCollisionsTopBottom(player2, 0.78, -0.73);
+                        pongGame.playerCanvasCollisionsRightLeft(player3, -0.75, 0.79);
+                        pongGame.playerCanvasCollisionsRightLeft(player4, -0.75, 0.79);
+                    }
+                },
 
-            // ############################# SCOREBOARD #############################
+                ballCollisions: function () {
+                    switch (ball.hit) {
+                        case 0: winner = player5; break;
+                        case 1: winner = player1; break;
+                        case 2: winner = player2; break;
+                        case 3: winner = player3; break;
+                        case 4: winner = player4; break;
+                    };
 
-            // Update scoreboard
-            updateScoreboard: function (playerScoreboard, winner) {
-                winner.score += 1;
-                if (winner != player5) document.getElementById(playerScoreboard).innerHTML = winner.score;
-                pongGame.clearScoreboard();
-            },
+                    if (gameType == "single" || gameType == "multi") {
+                        pongGame.borderResetLeftRight(winner);
+                        pongGame.borderBounceTopBottom();
+                    } else {
+                        pongGame.borderResetLeftRight(winner);
+                        pongGame.borderResetTopBottom(winner);
+                        pongGame.borderBounceTopBottom();
+                    }
 
-            // Clear scoreboard upong ending game
-            clearScoreboard: function () {
-                if (player1.score == goalNumber || player2.score == goalNumber || player3.score == goalNumber || player4.score == goalNumber || player5.score == computerGoal) {
-                    if (player1.score == goalNumber) overlayText = "The winner is... PLAYER 1";
-                    else if (player2.score == goalNumber) overlayText = "The winner is... PLAYER 2";
-                    else if (player3.score == goalNumber) overlayText = "The winner is... PLAYER 3";
-                    else if (player4.score == goalNumber) overlayText = "The winner is... PLAYER 4";
-                    else if (player5.score == computerGoal) overlayText = "The computer won. Rethink your strategies. Noob.";
+                    // Top & bottom bounce
+                    // if (ball.x <= -1) ball.movementX *= -1; // Left border
+                    // if (ball.x + ball.width >= 1) ball.movementX *= -1; // Right border
+                },
 
-                    ended = true;
-                    pongGame.endingMenu(true, overlayText);
-                    document.getElementById('scoreboard1').innerHTML = document.getElementById('scoreboard2').innerHTML = 0;
-                    player1.score = player2.score = 0; // Restart scoreboard
-                    ball.movementX = pongGame.getRandomOption(); // Ball moves towards random player
-                }
-            },
-
-            // ############################# MENUS #############################
-
-            // Landing overlay: open & close
-            gameMenu: function (open) {
-                if (open) document.getElementById("overlay").style.display = "block";
-                else document.getElementById("overlay").style.display = "none";
-            },
-
-            // Ending overlay: open & close
-            endingMenu: function (open, overlayText) {
-                if (open) {
-                    document.getElementById("gameOverOverlay").style.display = "block";
-                    document.getElementById("winnerText").innerHTML = overlayText;
-                }
-                else document.getElementById("gameOverOverlay").style.display = "none";
-            },
-
-            // Exit to landing menu
-            exit: function () {
-                pongGame.endingMenu(false);
-                pongGame.instructions(false);
-                pongGame.gameMenu(true);
-            },
-
-            // Open instructions overlay
-            instructions: function (open) {
-                if (open) { document.getElementById("instructionsOverlay").style.display = "block"; pongGame.gameMenu(false); }
-                else document.getElementById("instructionsOverlay").style.display = "none";
-            },
-
-            // ############################# TOOLS #############################
-
-            // Modify values depending on game mode
-            changeValuesGameMode: function (data1, data2, data3, data4) {
-                if (gameMode == "easy") { player2.y = player2.y + data1 }
-                if (gameMode == "medium") { player2.y = player2.y + data1 }
-                if (gameMode == "hard") { player2.y = player2.y + data2 }
-                if (gameMode == "impossible") { player2.y = player2.y + data3 }
-                if (gameMode == "arcade") { player2.y = player2.y + data4 }
-            },
-
-            // Generate ball repositioning for new turn. Avoids lineal movement (-0.01 to 0.01)
-            getRandomFloat: function (min, max) {
-                const str = (Math.random() * (max - min) + min).toFixed(3);
-                if (parseFloat(str) == 0.000 || parseFloat(str) == 0.001 || parseFloat(str) == -0.001) pongGame.getRandomFloat(min, max)
-                else return parseFloat(str);
-            },
-
-            // Generate random option
-            getRandomOption: function () {
-                return res = (Math.random() < 0.5) ? direction.left : direction.right;
-            },
-
-            // Configures goal limit button selector
-            goalButtonConfiguration: function (buttonName) {
-                var button = document.getElementsByClassName(buttonName);
-
-                var getGoalNumber = function () {
-                    if (buttonName == 'goalButton') {
-                        for (var i = 0; i < button.length; i++) {
-                            if (button[i].classList.contains('selected')) {
-                                goalNumber = button[i].value;
-
-                                if (goalNumber == 2) computerGoal = 8;
-                                else if (goalNumber == 5) computerGoal = 15;
-                                else if (goalNumber == 10) computerGoal = 20;
-                                else if (goalNumber == 999999999999999999999999) computerGoal = 999999999999999999999999;
-                            };
+                playerCollisionsRightLeft: function () {
+                    if (ball.x < 0.749 && ball.x > (player2.x - player2.width) - 0.01) { // Right player
+                        if (ball.y <= player2.y + player2.height && ball.y + ball.height >= player2.y) {
+                            ball.x = (player2.x - ball.width);
+                            ball.movementX = direction.left;
+                            ball.hit = 2;
                         }
                     }
-                }
-
-                var getGameMode = function () {
-                    if (buttonName == 'gameButton') {
-                        for (var i = 0; i < button.length; i++) {
-                            if (button[i].classList.contains('selected')) {
-                                gameMode = button[i].value;
-                            };
+                    if (ball.x < -0.749 && ball.x > (player1.x - player1.width) + 0.01) { // Left player
+                        if (ball.y <= player1.y + player1.height && ball.y + ball.height >= player1.y) {
+                            ball.x = (player1.x + ball.width);
+                            ball.movementX = direction.right;
+                            ball.hit = 1;
                         }
                     }
-                }
+                },
 
-                var addSelectClass = function () {
-                    removeSelectClass();
-                    this.classList.add('selected');
-                }
+                playerCollisionsBottom: function () {
+                    if (ball.y < -0.749 && ball.y > (player4.y - player4.height) + 0.01) { // Bottom player
+                        if (ball.x <= player4.x + player4.width && ball.x + ball.width >= player4.x) {
+                            ball.y = (player4.y + ball.height);
+                            ball.movementY = direction.up;
+                            ball.hit = 4;
+                        }
+                    }
+                },
 
-                var removeSelectClass = function () {
+                playerCollisionsTop: function () {
+                    if (ball.y < 0.749 && ball.y > (player3.y - player3.height) - 0.01) { // Top player
+                        if (ball.x <= player3.x + player3.width && ball.x + ball.width >= player3.x) {
+                            ball.y = (player3.y - ball.height);
+                            ball.movementY = direction.down;
+                            ball.hit = 3;
+                        }
+                    }
+                },
+
+                playerCanvasCollisionsTopBottom: function (playerName, topValue, bottomValue) {
+                    if (playerName.y >= (topValue - playerName.height)) playerName.y = (topValue - playerName.height); // Top limit
+                    if (playerName.y <= bottomValue) playerName.y = bottomValue; // Bottom limit
+                },
+
+                playerCanvasCollisionsRightLeft: function (playerName, leftValue, rightValue) {
+                    if (playerName.x >= (rightValue - playerName.width)) playerName.x = (rightValue - playerName.width); // Left limit
+                    if (playerName.x <= leftValue) playerName.x = leftValue; // Right limit
+                },
+
+                borderResetLeftRight: function (winner) {
+                    if (ball.x <= -1) { pongGame.newTurn(winner, player1); ball.hit = 0; }// Left border reset
+                    if (ball.x + ball.width >= 1) { pongGame.newTurn(winner, player2); ball.hit = 0; } // Right border reset
+                },
+
+                borderResetTopBottom: function (winner) {
+                    if (ball.y <= -1) pongGame.newTurn(winner, player4); // Bottom border reset
+                    if (gameType != "3p") if (ball.y + ball.height >= 1) pongGame.newTurn(winner, player3); // Top border reset
+                },
+
+                borderBounceTopBottom: function () {
+                    if (ball.y + ball.width >= 1) ball.movementY *= -1; // Top border bounce
+                    if (gameType != "3p") if (ball.y <= -1) ball.movementY *= -1; // Bottom border bounce
+                },
+
+                // ############################# KEYBOARD DETECTING #############################
+
+                // Processing keyDown through flag
+                onKeyDown: function (key) { // Player state changes to moving up or down by key pressing
+                    switch (key.keyCode) {  // Player3 & player4 are lightly faster
+                        case 87: player1.move = 0.02; break; // Keybind w - up
+                        case 83: player1.move = -0.02; break; // Keybind s - down
+                        case 38: player2.move = 0.02; break; // Arrow up
+                        case 40: player2.move = -0.02; break; // Arrow down
+                        case 74: player3.move = -0.03; break; // Keybind j - left
+                        case 76: player3.move = 0.03; break; // Keybind l - right
+                        case 100: player4.move = -0.03; break; // Keybind 4 (numlock) - left
+                        case 102: player4.move = 0.03; break; // Keybind 6 (numlock) - right
+                    }
+                },
+
+                // Processing keyUp through flag
+                onKeyUp: function (key) {
+                    player1.move = 0;
+                    player2.move = 0;
+                    player3.move = 0;
+                    player4.move = 0;
+                },
+
+                // ############################# GAME DEVELOPMENT #############################
+
+                // Start game
+                play: function (type) {
+                    pongGame.gameMenu(false);
+                    ended = false;
+                    init(type, goalNumber, computerGoal, gameMode);
+                },
+
+                // Play again - same mode (single, multiplayer, 3 players, 4 players)
+                playAgain: function () {
+                    pongGame.endingMenu(false);
+                    ended = false;
+                    init(gameType, goalNumber, computerGoal, gameMode);
+                },
+
+                // Resets turn when ball is thrown out of the canvas
+                newTurn: function (winner, loser) {
+
+                    // Reset ball values
+                    ball.x = 0;
+                    ball.y = 0;
+                    ball.hit = 0;
+
+                    // Ball is redirected to loser's side
+                    switch (winner) {
+                        case player1: scoreboard = 'scoreboard1'; break;
+                        case player2: scoreboard = 'scoreboard2'; break;
+                        case player3: scoreboard = 'scoreboard3'; break;
+                        case player4: scoreboard = 'scoreboard4'; break;
+                    }
+
+                    switch (loser) {
+                        case player1: pongGame.newTurnAux(winner, direction.right, 0.015, -0.015, scoreboard, ball.movementX, ball.movementY); break;
+                        case player2: pongGame.newTurnAux(winner, direction.left, 0.014, -0.015, scoreboard, ball.movementX, ball.movementY); break;
+                        case player3: pongGame.newTurnAux(winner, direction.up, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
+                        case player3: pongGame.newTurnAux(winner, direction.up, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
+                        case player4: pongGame.newTurnAux(winner, direction.down, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
+                    }
+                },
+
+                // Auxiliar function for newTurn - updates ball movement & scoreboard
+                newTurnAux: function (winner, dir, float1, float2, scoreboard, ball1, ball2) {
+                    ball1 = dir;
+                    ball2 = pongGame.getRandomFloat(float1, float2);
+
+                    pongGame.updateScoreboard(scoreboard, winner); // Update score
+                },
+
+                // ############################# SCOREBOARD #############################
+
+                // Update scoreboard
+                updateScoreboard: function (playerScoreboard, winner) {
+                    winner.score += 1;
+                    if (winner != player5) document.getElementById(playerScoreboard).innerHTML = winner.score;
+                    pongGame.clearScoreboard();
+                },
+
+                // Clear scoreboard upong ending game
+                clearScoreboard: function () {
+                    if (player1.score == goalNumber || player2.score == goalNumber || player3.score == goalNumber || player4.score == goalNumber || player5.score == computerGoal) {
+                        if (player1.score == goalNumber) overlayText = "The winner is... PLAYER 1";
+                        else if (player2.score == goalNumber) overlayText = "The winner is... PLAYER 2";
+                        else if (player3.score == goalNumber) overlayText = "The winner is... PLAYER 3";
+                        else if (player4.score == goalNumber) overlayText = "The winner is... PLAYER 4";
+                        else if (player5.score == computerGoal) overlayText = "The computer won. Rethink your strategies. Noob.";
+
+                        ended = true;
+                        pongGame.endingMenu(true, overlayText);
+                        document.getElementById('scoreboard1').innerHTML = document.getElementById('scoreboard2').innerHTML = 0;
+                        player1.score = player2.score = 0; // Restart scoreboard
+                        ball.movementX = pongGame.getRandomOption(); // Ball moves towards random player
+                    }
+                },
+
+                // ############################# MENUS #############################
+
+                // Landing overlay: open & close
+                gameMenu: function (open) {
+                    if (open) document.getElementById("overlay").style.display = "block";
+                    else document.getElementById("overlay").style.display = "none";
+                },
+
+                // Ending overlay: open & close
+                endingMenu: function (open, overlayText) {
+                    if (open) {
+                        document.getElementById("gameOverOverlay").style.display = "block";
+                        document.getElementById("winnerText").innerHTML = overlayText;
+                    }
+                    else document.getElementById("gameOverOverlay").style.display = "none";
+                },
+
+                // Exit to landing menu
+                exit: function () {
+                    pongGame.endingMenu(false);
+                    pongGame.instructions(false);
+                    pongGame.gameMenu(true);
+                },
+
+                // Open instructions overlay
+                instructions: function (open) {
+                    if (open) { document.getElementById("instructionsOverlay").style.display = "block"; pongGame.gameMenu(false); }
+                    else document.getElementById("instructionsOverlay").style.display = "none";
+                },
+
+                // ############################# TOOLS #############################
+
+                // Modify values depending on game mode
+                changeValuesGameMode: function (data1, data2, data3, data4) {
+                    if (gameMode == "easy") { player2.y = player2.y + data1 }
+                    if (gameMode == "medium") { player2.y = player2.y + data1 }
+                    if (gameMode == "hard") { player2.y = player2.y + data2 }
+                    if (gameMode == "impossible") { player2.y = player2.y + data3 }
+                    if (gameMode == "arcade") { player2.y = player2.y + data4 }
+                },
+
+                // Generate ball repositioning for new turn. Avoids lineal movement (-0.01 to 0.01)
+                getRandomFloat: function (min, max) {
+                    const str = (Math.random() * (max - min) + min).toFixed(3);
+                    if (parseFloat(str) == 0.000 || parseFloat(str) == 0.001 || parseFloat(str) == -0.001) pongGame.getRandomFloat(min, max)
+                    else return parseFloat(str);
+                },
+
+                // Generate random option
+                getRandomOption: function () {
+                    return res = (Math.random() < 0.5) ? direction.left : direction.right;
+                },
+
+                // Configures goal limit button selector
+                goalButtonConfiguration: function (buttonName) {
+                    var button = document.getElementsByClassName(buttonName);
+
+                    var getGoalNumber = function () {
+                        if (buttonName == 'goalButton') {
+                            for (var i = 0; i < button.length; i++) {
+                                if (button[i].classList.contains('selected')) {
+                                    goalNumber = button[i].value;
+
+                                    if (goalNumber == 2) computerGoal = 8;
+                                    else if (goalNumber == 5) computerGoal = 15;
+                                    else if (goalNumber == 10) computerGoal = 20;
+                                    else if (goalNumber == 999999999999999999999999) computerGoal = 999999999999999999999999;
+                                };
+                            }
+                        }
+                    }
+
+                    var getGameMode = function () {
+                        if (buttonName == 'gameButton') {
+                            for (var i = 0; i < button.length; i++) {
+                                if (button[i].classList.contains('selected')) {
+                                    gameMode = button[i].value;
+                                };
+                            }
+                        }
+                    }
+
+                    var addSelectClass = function () {
+                        removeSelectClass();
+                        this.classList.add('selected');
+                    }
+
+                    var removeSelectClass = function () {
+                        for (var i = 0; i < button.length; i++) {
+                            button[i].classList.remove('selected')
+                        }
+                    }
+
                     for (var i = 0; i < button.length; i++) {
-                        button[i].classList.remove('selected')
+                        button[i].addEventListener("click", addSelectClass);
+
+                        if (buttonName == 'goalButton') {
+                            getGoalNumber();
+                            button[i].addEventListener("click", getGoalNumber);
+                        }
+                        if (buttonName == 'gameButton') {
+                            getGameMode();
+                            button[i].addEventListener("click", getGameMode);
+                        }
                     }
                 }
+            };
 
-                for (var i = 0; i < button.length; i++) {
-                    button[i].addEventListener("click", addSelectClass);
+            var clock = {
+                totalSeconds: 0,
 
-                    if (buttonName == 'goalButton') {
-                        getGoalNumber();
-                        button[i].addEventListener("click", getGoalNumber);
+                startTimer: function () {
+                    if (!this.interval) {
+                        var self = this;
+                        function pad(val) { return val > 9 ? val : "0" + val; }
+                        this.interval = setInterval(function () {
+                            self.totalSeconds += 1;
+                        }, 1000);
                     }
-                    if (buttonName == 'gameButton') {
-                        getGameMode();
-                        button[i].addEventListener("click", getGameMode);
-                    }
+                },
+
+                resetTimer: function () {
+                    clock.totalSeconds = null;
+                    clearInterval(this.interval);
+                    delete this.interval;
+                },
+
+                pauseTimer: function () {
+                    clearInterval(this.interval);
+                    delete this.interval;
+                },
+
+                resumeTimer: function () {
+                    this.startTimer();
                 }
+            };
+
+            function uponFirstLoad() {
+                pongGame.goalButtonConfiguration('goalButton');
+                pongGame.goalButtonConfiguration('gameButton');
             }
-        };
 
-        var clock = {
-            totalSeconds: 0,
+            var pongGame = Object.assign({}, game);
+            window.onload = uponFirstLoad(); // Goal limit button selection
 
-            startTimer: function () {
-                if (!this.interval) {
-                    var self = this;
-                    function pad(val) { return val > 9 ? val : "0" + val; }
-                    this.interval = setInterval(function () {
-                        self.totalSeconds += 1;
-                    }, 1000);
-                }
-            },
-
-            resetTimer: function () {
-                clock.totalSeconds = null;
-                clearInterval(this.interval);
-                delete this.interval;
-            },
-
-            pauseTimer: function () {
-                clearInterval(this.interval);
-                delete this.interval;
-            },
-
-            resumeTimer: function () {
-                this.startTimer();
-            }
-        };
-
-        function uponFirstLoad() {
-            pongGame.goalButtonConfiguration('goalButton');
-            pongGame.goalButtonConfiguration('gameButton');
-        }
-
-        var pongGame = Object.assign({}, game);
-        window.onload = uponFirstLoad(); // Goal limit button selection
-
-    </script>
+        </script>
 
 </body>
 
