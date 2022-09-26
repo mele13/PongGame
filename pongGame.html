@@ -2,12 +2,9 @@
 
 TO DO:
 - more balls?
-- add marker with html - goal count
 - add authors on bottom
 - keybind to accelarate / slow down ball
-- colour explosion? etc
 - add instructions - keybinds, etc to html on bottom
-- select right or left player
 
 TO FIX:
 - can't detect second key being pushed when another one has been pushed first
@@ -18,7 +15,6 @@ SUGGESTIONS:
 - if ball hits a corner, ball speed increases greatly
 - if ball hits angle, ball speed incresase ??
 - time over ??
-- mode: noob, easy, medium, hard, impossible
 - pause?
 
 -->
@@ -89,12 +85,39 @@ SUGGESTIONS:
 
         #scoreboard3,
         #scoreboard4 {
-            display: hidden;
+            display: none;
         }
 
         #overlay,
-        #gameOverOverlay {
+        #gameOverOverlay,
+        #instructionsOverlay {
             text-align: center
+        }
+
+        #instructionsOverlay {
+            display: none;
+        }
+
+        #top {
+            width: 100%;
+            /* background-color: red; */
+            height: 15%;
+        }
+
+        #bottom {
+            width: 100%;
+            /* background-color: blue; */
+            height: 85%;
+        }
+
+        .inner {
+            width: 50%;
+            height: 50%;
+            box-sizing: border-box;
+            border: 1px solid black;
+            float: left;
+            text-align: center;
+            padding: 16px;
         }
 
         /* 
@@ -128,7 +151,7 @@ SUGGESTIONS:
             <button id="multiplayer" onclick="pongGame.play('multi')">Multiplayer</button>
             <button id="3player" onclick="pongGame.play('3p')">3p</button>
             <button id="4player" onclick="pongGame.play('4p')">4p</button>
-            <button id="instructions" onclick="pongGame.gameMenu(false)">Instrutions</button>
+            <button id="instructions" onclick="pongGame.instructions(true)">Instrutions</button>
 
             <div id="goalLimit">
                 Goal limit
@@ -143,7 +166,7 @@ SUGGESTIONS:
                 <button id="easy" class="gameButton selected" value="easy">Easy</button>
                 <button id="medium" class="gameButton" value="medium">Medium</button>
                 <button id="hard" class="gameButton" value="hard">Hard</button>
-                <button id="extreme" class="gameButton" value="extreme">Extreme</button>
+                <button id="impossible" class="gameButton" value="impossible">Impossible</button>
                 <label>--- * ---</label>
                 <button id="arcade" class="gameButton" value="arcade">Arcade</button>
             </div>
@@ -159,6 +182,20 @@ SUGGESTIONS:
         </div>
     </div>
 
+    <div id="instructionsOverlay">
+        <div id="menu-container">
+            <div id="top">Instructions</div>
+            <div id="bottom">
+                <div class="inner">Player 1</div>
+                <div class="inner">Player 2</div>
+                <div class="inner">Player 3</div>
+                <div class="inner">Player 4</div>
+                <div class="general">General instructions</div>
+                <button id="exit" onclick="pongGame.exit()">Back</button>
+            </div>
+        </div>
+    </div>
+
     <div id="container">
         <div id="scoreboard">
             <div id="scoreboard1">0</div>
@@ -167,6 +204,14 @@ SUGGESTIONS:
             <div id="scoreboard4">1</div>
         </div>
         <canvas width="600" height="550" id="my_Canvas"></canvas>
+        <div id="leftSide">
+            <div id="leftTop">Player 1</div>
+            <div id="leftBottom">Player 2</div>
+        </div>
+        <div id="rightSide">
+            <div id="leftBottom">Player 3</div>
+            <div id="leftTop">Player 4</div>
+        </div>
 
         <!-- <p>
             Instructions:
@@ -218,7 +263,7 @@ SUGGESTIONS:
         // Game direction - ball & player movement
         var direction = {
             'standard': 0,
-            'left': -0.015, 
+            'left': -0.015,
             'right': 0.015,
             'up': 0.01, 'down': -0.01
         }
@@ -258,29 +303,22 @@ SUGGESTIONS:
             gl.drawArrays(gl.TRIANGLES, 0, 6); // Method that paints elements - rectangles, etc
         }
         // ---------------------------------------- End class modification ----------------------------------------
-        
-        function init(gameType, goalNumber, computerGoal, gameMode) {            
+
+        function init(gameType, goalNumber, computerGoal, gameMode) {
             // Game initialization
             this.gameType = gameType;
             this.goalNumber = goalNumber;
             this.computerGoal = computerGoal;
             this.gameMode = gameMode;
 
-            // Player creation
-            player1 = pongGame.newPlayer(-0.8, -0.15, "player1", 0.05, 0.3, 0); // Left player
-            player2 = pongGame.newPlayer(0.74, -0.15, "player2", 0.05, 0.3, 0); // Right player
-            player3 = pongGame.newPlayer(-0.15, 0.73, "player3", 0.3, 0.05, 1); // Top player || x = (width / 2) * -1
-            player4 = pongGame.newPlayer(-0.15, -0.78, "player4", 0.3, 0.05, 1); // Bottom player
-            player5 = pongGame.newPlayer(0, 0, "player5", 0, 0, 0); // Phantom player - avoid error among first goal without a player hit (4 players)
+            pongGame.createPlayers(); // Player creation
+            ball = pongGame.newBall(0, 0, "ball", 0.05, 0.05, 0.015, 0.01); // Easy mode ball            
+            pongGame.gameModeConfiguration(); // Modify values depending on gamemode   
 
-            ball = pongGame.newBall(0, 0, "ball", 0.05, 0.05, 0.015, 0.01); // Easy mode ball
-
-            // Modify values depending 
-            if (gameMode == "easy") { direction.left = -0.015; direction.right = 0.015; };
-            if (gameMode == "medium") { direction.left = -0.025; direction.right = 0.025; ball.movementX = 0.25; };
-            if (gameMode == "hard") { direction.left = -0.035; direction.right = 0.035; ball.movementX = 0.35; };
-            if (gameMode == "extreme") { direction.left = -0.050; direction.right = 0.050; ball.movementX = 0.50; };
-            if (gameMode == "arcade") { direction.left = -0.050; direction.right = 0.050; ball.movementX = 0.50; };
+            // Modifying number of goals the computer needs to win depending on gamemode
+            if (gameMode == "medium") computerGoal *= 2;
+            if (gameMode == "hard") computerGoal *= 5;
+            if (gameMode == "impossible") computerGoal *= 10;
 
             // ============ STEP 1: Creating a canvas=================
             canvas = document.getElementById('my_Canvas');
@@ -418,7 +456,7 @@ SUGGESTIONS:
                 // cannot be increased gradually (movementX varies upon reset or hit)
                 // Being randomly increased ensures a non-boring game and avoids linear hits vs AI
                 // This method makes player3 and player4 be in disadvantage since ball moves in x axis
-                // therefore player3 and player4 always start with 1 extra goal
+                // therefore player3 and player4 always start with 1 extra goal & move slightly faster
                 if (count > 0 && count % 10 == 0) {
                     if (ball.movementX < 0) ball.movementX -= 0.003;
                     else ball.movementX += 0.003;
@@ -441,10 +479,20 @@ SUGGESTIONS:
                 drawRectangle(player1); // Painting player1
                 drawRectangle(player2); // Painting player2
 
-                if (gameType === "3p") drawRectangle(player4);
+                if (gameType === "3p") { drawRectangle(player4); pongGame.drawScoreboard(true, false); }
                 else if (gameType === "4p") {
                     drawRectangle(player3);
                     drawRectangle(player4);
+                    pongGame.drawScoreboard(true, true);
+                } else pongGame.drawScoreboard(false);
+            },
+
+            // Draw player3 & player4 scoreboard
+            drawScoreboard: function (draw, both) {
+                if(draw && !both) document.getElementById('scoreboard3').style.display = "block";
+                if(draw && both) {
+                    document.getElementById('scoreboard3').style.display = "block";
+                    document.getElementById('scoreboard4').style.display = "block";
                 }
             },
 
@@ -481,11 +529,29 @@ SUGGESTIONS:
                 return dirName;
             },
 
+            createPlayers: function () {
+                player1 = pongGame.newPlayer(-0.8, -0.15, "player1", 0.05, 0.3, 0); // Left player
+                player2 = pongGame.newPlayer(0.74, -0.15, "player2", 0.05, 0.3, 0); // Right player
+                player3 = pongGame.newPlayer(-0.15, 0.73, "player3", 0.3, 0.05, 1); // Top player || x = (width / 2) * -1
+                player4 = pongGame.newPlayer(-0.15, -0.78, "player4", 0.3, 0.05, 1); // Bottom player
+                player5 = pongGame.newPlayer(0, 0, "player5", 0, 0, 0); // Phantom player - avoid error among first goal without a player hit (4 players)
+            },
+
+            gameModeConfiguration: function () {
+                if (gameMode == "easy") { direction.left = -0.015; direction.right = 0.015; };
+                if (gameMode == "medium") { direction.left = -0.024; direction.right = 0.024; ball.movementX = 0.24; };
+                if (gameMode == "hard") { direction.left = -0.035; direction.right = 0.035; ball.movementX = 0.35; };
+                if (gameMode == "impossible") { direction.left = -0.037; direction.right = 0.037; ball.movementX = 0.37; };
+                if (gameMode == "arcade") { direction.left = -0.08; direction.right = 0.08; ball.movementX = 0.8; };
+            },
+
             // ############################# ANIMATIONS & COLLISIONS #############################
 
             ballAnimation: function () {
-                ball.x += ball.movementX; // Si pongo aqui el pongGame.getRandomOption(); la pelota se mueve en zig zag - posible minijuego??
-                ball.y += ball.movementY;
+
+                if (gameMode != "arcade") { ball.x += ball.movementX; ball.y += ball.movementY; }
+                else { ball.x += pongGame.getRandomOption(); ball.y += pongGame.getRandomOption(); }
+
             },
 
             playerAnimation: function (playerName) {
@@ -496,26 +562,13 @@ SUGGESTIONS:
             aiAnimation: function () {
                 // AI moves up
                 if (player2.y > ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) player2.y -= 0.008;
-                    else player2.y -= 0.008;
+                    if (ball.movementX > 0) pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
+                    else pongGame.changeValuesGameMode(-0.008, -0.009, -0.015, -0.015);
                 }
                 // AI moves down
                 if (player2.y < ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) player2.y += 0.008; // 0.008 noob - 0.01 no falla
-                    else player2.y += 0.008;
-                }
-
-            },
-
-            aiAnimationAux: function (player1) {
-                if (player2.y > ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) player2.y -= 0.008;
-                    else player2.y -= 0.008;
-                }
-                // AI moves down
-                if (player2.y < ball.y - (player2.height / 2)) {
-                    if (ball.movementX > 0) player2.y += 0.008; // 0.008 noob - 0.01 no falla
-                    else player2.y += 0.008;
+                    if (ball.movementX > 0) pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015); // 0.008 noob - 0.01 no falla
+                    else pongGame.changeValuesGameMode(0.008, 0.009, 0.015, 0.015);
                 }
             },
 
@@ -636,16 +689,16 @@ SUGGESTIONS:
             // ############################# KEYBOARD DETECTING #############################
 
             // Processing keyDown through flag
-            onKeyDown: function (key) {
-                switch (key.keyCode) { // Player state changes to moving up or down by key pressing
+            onKeyDown: function (key) { // Player state changes to moving up or down by key pressing
+                switch (key.keyCode) {  // Player3 & player4 are lightly faster
                     case 87: player1.move = 0.02; break; // Keybind w - up
                     case 83: player1.move = -0.02; break; // Keybind s - down
                     case 38: player2.move = 0.02; break; // Arrow up
                     case 40: player2.move = -0.02; break; // Arrow down
-                    case 74: player3.move = -0.02; break; // Keybind j - left
-                    case 76: player3.move = 0.02; break; // Keybind l - right
-                    case 100: player4.move = -0.02; break; // Keybind 4 (numlock) - left
-                    case 102: player4.move = 0.02; break; // Keybind 6 (numlock) - right
+                    case 74: player3.move = -0.03; break; // Keybind j - left
+                    case 76: player3.move = 0.03; break; // Keybind l - right
+                    case 100: player4.move = -0.03; break; // Keybind 4 (numlock) - left
+                    case 102: player4.move = 0.03; break; // Keybind 6 (numlock) - right
                 }
             },
 
@@ -696,8 +749,6 @@ SUGGESTIONS:
                     case player3: pongGame.newTurnAux(winner, direction.up, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
                     case player4: pongGame.newTurnAux(winner, direction.down, -0.015, 0.015, scoreboard, ball.movementY, ball.movementX); break;
                 }
-
-                console.log(player5.score);
             },
 
             // Auxiliar function for newTurn - updates ball movement & scoreboard
@@ -738,13 +789,13 @@ SUGGESTIONS:
 
             // Landing overlay: open & close
             gameMenu: function (open) {
-                if (open == true) document.getElementById("overlay").style.display = "block";
+                if (open) document.getElementById("overlay").style.display = "block";
                 else document.getElementById("overlay").style.display = "none";
             },
 
             // Ending overlay: open & close
             endingMenu: function (open, overlayText) {
-                if (open == true) {
+                if (open) {
                     document.getElementById("gameOverOverlay").style.display = "block";
                     document.getElementById("winnerText").innerHTML = overlayText;
                 }
@@ -754,17 +805,26 @@ SUGGESTIONS:
             // Exit to landing menu
             exit: function () {
                 pongGame.endingMenu(false);
+                pongGame.instructions(false);
                 pongGame.gameMenu(true);
+            },
+
+            // Open instructions overlay
+            instructions: function (open) {
+                if (open) { document.getElementById("instructionsOverlay").style.display = "block"; pongGame.gameMenu(false); }
+                else document.getElementById("instructionsOverlay").style.display = "none";
             },
 
             // ############################# TOOLS #############################
 
-            // // Incremental timer
-            // secondsCounter: function () {
-            //     date = new Date();
-            //     date.setSeconds(0, 0);
-            //     return setInterval(date.getSeconds(), 1000);
-            // },
+            // Modify values depending on game mode
+            changeValuesGameMode: function (data1, data2, data3, data4) {
+                if (gameMode == "easy") { player2.y = player2.y + data1 }
+                if (gameMode == "medium") { player2.y = player2.y + data1 }
+                if (gameMode == "hard") { player2.y = player2.y + data2 }
+                if (gameMode == "impossible") { player2.y = player2.y + data3 }
+                if (gameMode == "arcade") { player2.y = player2.y + data4 }
+            },
 
             // Generate ball repositioning for new turn. Avoids lineal movement (-0.01 to 0.01)
             getRandomFloat: function (min, max) {
