@@ -18,12 +18,10 @@ Pong Game is a classic arcade-style game implemented using HTML, CSS, and JavaSc
 
 ## Description
 Pong Game is a web-based recreation of the iconic Pong arcade game. It offers a modern twist to the classic by allowing multiplayer action, different game modes, and customizable settings.
-
 ![ezgif com-gif-maker](https://github.com/mele13/PongGame/assets/87198060/2cd996e1-d4d7-4edb-9389-eedde12ff013)
 
 ## Gameplay
 The game is set on a canvas, where players control paddles to bounce a ball back and forth. The objective is to prevent the ball from passing your paddle while trying to make the ball pass your opponent's paddle. The game ends when a player reaches the set number of goals.
-
 ![ezgif com-video-to-gif](https://github.com/mele13/PongGame/assets/87198060/acea3953-529f-4e15-b3c5-4493d8b3e6d5)
 
 ## Features
