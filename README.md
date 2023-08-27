@@ -35,7 +35,7 @@ To view the project locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   https://github.com/mele13/PongGame
+   https://github.com/mele13/PongGame.git
    ```
    ```bash
    cd PongGame
